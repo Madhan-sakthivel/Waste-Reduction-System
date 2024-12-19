@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Expiring Soon</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <h1>Supermarket Waste Reduction</h1>
+            <nav>
+                <a href="/add-product">Add Product</a>
+                <a href="/show-products">Show Products</a>
+                <a href="/expiry-products">Expiry Products</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2 style="color: grey;">Products Expiring in the Next Two Months</h2>
+            <div id="expiryProductList"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Supermarket Waste Reduction System | All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Fetch Expiry Products
+        fetch('/api/expiry-products')
+            .then(response => response.json())
+            .then(data => {
+                const productList = document.getElementById('expiryProductList');
+                if (data.length > 0) {
+                    let html = '<table>';
+                    html += '<tr><th>Name</th><th>Category</th><th>Price</th><th>Expiry Date</th></tr>';
+                    data.forEach(product => {
+                        html += `<tr>
+                                    <td>${product.name}</td>
+                                    <td>${product.category}</td>
+                                    <td>${product.price}</td>
+                                    <td>${new Date(product.expiry_date).toLocaleDateString()}</td>
+                                </tr>`;
+                    });
+                    html += '</table>';
+                    productList.innerHTML = html;
+                } else {
+                    productList.innerHTML = '<p>No products nearing expiry.</p>';
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching expiry products:', err);
+                document.getElementById('expiryProductList').innerHTML = '<p>Error fetching data</p>';
+            });
+    </script>
+</body>
+</html>
